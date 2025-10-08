@@ -1,5 +1,4 @@
-use m4ri_rust::friendly::*;
-use vob::Vob;
+use rug::{Complete, Integer};
 use std::fs::File;
 use std::io::{self, BufRead};
 use std::path::Path;
@@ -12,7 +11,7 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
-pub fn parse_challenge(path: String) -> (BinMatrix, BinVector, usize, usize) {
+pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize) {
     // Parse the file
     let mut lines = read_lines(&path).expect("Wrong file format.");
 
@@ -67,26 +66,23 @@ pub fn parse_challenge(path: String) -> (BinMatrix, BinVector, usize, usize) {
     let k = n / 2;
 
     // Following lines are the parity check matrix
-    let H = BinMatrix::new((0..k)
+    let H = (0..k)
     .map(|_| {
         match lines.next() {
             Some(Ok(line)) if line.len() == k => {
-                    line.chars()
-                    .map(|ch| match ch {
-                        '0' => Some(false),
-                        '1' => Some(true),
-                        _ => None,
-                    })
-                    .collect::<Option<Vob>>()
-                    .map(|e| { BinVector::from(e)})
+                let a = Integer::parse_radix(line, 2);
+                match a {
+                    Err (_) => None,
+                    Ok (val) => Some(val.complete())
+                }
             }
             _ => None,
         }
     })
-    .collect::<Option<Vec<BinVector>>>()
+    .collect::<Option<Vec<Integer>>>()
     .expect(
         "Wrong file format."
-    ));
+    );
 
     // Just before last line
     if let Some(Ok(l)) = lines.next() {
@@ -95,14 +91,11 @@ pub fn parse_challenge(path: String) -> (BinMatrix, BinVector, usize, usize) {
 
     let s = match lines.next() {
         Some(Ok(line)) if line.len() == k => {
-            line.chars()
-                .map(|ch| match ch {
-                    '0' => Some(false),
-                    '1' => Some(true),
-                    _ => None,
-                })
-                .collect::<Option<Vob>>()
-                .map(|e| { BinVector::from(e)})
+            let a = Integer::parse_radix(line, 2);
+            match a {
+                Err (_) => None,
+                Ok (val) => Some(val.complete())
+            }
         }
         _ => None,
     }.expect(

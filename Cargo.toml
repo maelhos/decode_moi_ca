@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 m4ri-rust = "0.4.0"
+rug = "1.28.0"
 
 [dependencies.vob]
 version = "^2.0.6"

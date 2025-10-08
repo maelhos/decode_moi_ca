@@ -1,8 +1,26 @@
-use m4ri_rust::friendly::*;
+use rug::{Complete, Integer};
 
+use crate::hamming_iter::HammingIter;
 // TODO: decode by just trying random haming weight vectors of incresing weight
-fn decode_bf(H: BinMatrix, s: BinVector, w: usize) -> Option<BinVector>
-{
+
+pub fn decode_bf(H: Vec<Integer>, s: Integer, k: usize, w: usize) -> Option<Integer>
+{   
+    for tw in 2..w {
+        let hi = HammingIter::new(k, tw);
+
+        for v in hi {
+            println!("Trying : {:?}", v.to_string_radix(2));
+            let mut good = true;
+
+            for (index, hm) in H.iter().enumerate() {
+                if ((hm ^ &v).complete().count_ones().unwrap().is_multiple_of(2)) ^ s.get_bit(index as u32) {
+                    good = false;
+                    break
+                }
+            }
+            if good { return Some(v); }
+        }
+    }
     None
 }
 
