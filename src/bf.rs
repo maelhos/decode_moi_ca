@@ -1,26 +1,29 @@
 use rug::{Complete, Integer};
-
 use crate::hamming_iter::HammingIter;
-// TODO: decode by just trying random haming weight vectors of incresing weight
 
-pub fn decode_bf(H: Vec<Integer>, s: Integer, k: usize, w: usize) -> Option<Integer>
-{   
-    for tw in 2..w {
-        let hi = HammingIter::new(k, tw);
+pub fn decode_bf(H: &Vec<Integer>, s: &Integer, n: usize, w: usize) -> Option<Integer> {
+    for tw in 1..=w {
+        let hi = HammingIter::new(n, tw);
 
-        for v in hi {
-            println!("Trying : {:?}", v.to_string_radix(2));
-            let mut good = true;
+        for e in hi {
+            let mut is_ok = true;
 
-            for (index, hm) in H.iter().enumerate() {
-                if ((hm ^ &v).complete().count_ones().unwrap().is_multiple_of(2)) ^ s.get_bit(index as u32) {
-                    good = false;
+            for (index, h_row) in H.iter().enumerate() {
+                let c_bit = (h_row & &e).complete().count_ones().unwrap() & 1;
+                let t_bit = s.get_bit(index as u32) as u32;
+
+                if c_bit != t_bit {
+                    is_ok = false;
                     break
                 }
             }
-            if good { return Some(v); }
+
+            if is_ok {
+                return Some(e);
+            }
         }
     }
+    // If no error vector of weight <= w produces the syndrome 's', return None.
     None
 }
 

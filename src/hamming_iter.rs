@@ -3,7 +3,6 @@ use std::mem;
 use rug::{Complete, Integer};
 
 pub struct HammingIter {
-    w: usize,
     curr: Integer,
     max: Integer
 }
@@ -11,7 +10,6 @@ pub struct HammingIter {
 impl HammingIter {
     pub fn new(k: usize, w: usize) -> HammingIter {
         HammingIter { 
-            w: w, 
             curr: (Integer::from(1) << w) - 1, 
             max: Integer::from(1) << k 
         }
@@ -36,7 +34,6 @@ impl Iterator for HammingIter {
         Some(old)
     }
 }
-
 
 #[cfg(test)]
 mod tests {

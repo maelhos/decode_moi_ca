@@ -11,7 +11,14 @@ where
     Ok(io::BufReader::new(file).lines())
 }
 
-pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize) {
+fn rev(a: Integer, n: usize) -> Integer {
+    let mut ret = Integer::from(0);
+    for i in 0..n {
+        ret.set_bit(i as u32, a.get_bit((n - i - 1) as u32));
+    }
+    ret
+}
+pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize, usize) {
     // Parse the file
     let mut lines = read_lines(&path).expect("Wrong file format.");
 
@@ -66,7 +73,7 @@ pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize) {
     let k = n / 2;
 
     // Following lines are the parity check matrix
-    let H = (0..k)
+    let H_T_right = (0..k)
     .map(|_| {
         match lines.next() {
             Some(Ok(line)) if line.len() == k => {
@@ -101,5 +108,16 @@ pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize) {
     }.expect(
         "Wrong file format."
     );
-    (H, s, w, k)
+    let H = (0..k).map( |idx| {
+        let mut ret = (Integer::ONE << (k - idx - 1)).complete();
+        for i in 0..k {
+            ret.set_bit((k+i) as u32,H_T_right[i].get_bit(idx as u32));
+        }
+        ret
+    } ).rev().collect::<Vec<Integer>>();
+    (H, rev(s, k) , w, k, n)
 }
+
+/* 
+000000100010001100000000000000
+*/
