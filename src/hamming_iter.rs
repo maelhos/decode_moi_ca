@@ -4,14 +4,14 @@ use rug::{Complete, Integer};
 
 pub struct HammingIter {
     curr: Integer,
-    max: Integer
+    max: Integer,
 }
 
 impl HammingIter {
     pub fn new(k: usize, w: usize) -> HammingIter {
-        HammingIter { 
-            curr: (Integer::from(1) << w) - 1, 
-            max: Integer::from(1) << k 
+        HammingIter {
+            curr: (Integer::from(1) << w) - 1,
+            max: Integer::from(1) << k,
         }
     }
 }
@@ -46,21 +46,24 @@ mod tests {
         let w = 4;
 
         let iter = HammingIter::new(k, w);
-        let mut previous = Integer::from(-1); 
+        let mut previous = Integer::from(-1);
 
         for current in iter {
             println!("Iter : {:?}", current.to_string_radix(2));
             assert_eq!(
-                current.count_ones_64().unwrap() as usize, w,
-                "Value {} does not have weight {}", current, w
+                current.count_ones_64().unwrap() as usize,
+                w,
+                "Value {} does not have weight {}",
+                current,
+                w
             );
             assert!(
                 current > previous,
-                "Sequence is not increasing: {} is not > {}", current, previous
+                "Sequence is not increasing: {} is not > {}",
+                current,
+                previous
             );
             previous = current;
         }
     }
-
 }
-

@@ -46,25 +46,24 @@ For now only syndrome decoding is implemented, we might also want to do LWC.
 - [x] Hamming weight iterator
 - [x] Basic bruteforce search
 - [ ] Randomized search
-- [ ] Dummer algorithm
+- [x] Dummer algorithm
 - [ ] Better datastructure / memory management / custom storage types
 - [ ] MMT
-- [ ] Prange
 - [ ] Benchmark
 - [ ] Multi-thread
 
 ## Records
 
-Current record is `chall7` corresponding to **n = 70** and **w = 11** with *Iterative search*
+Current record is `chall11` corresponding to **n = 110** and **w = 16** with *Dummer*
 
 ```text
-$ time ./decode_moi_ca challs/chall6
-Succesfuly parsed, k = 30, w = 10
-Solution found : H*"010100100001000000001001000000000000000000000100000000000000" = s
+$ time ./decode_moi_ca challs/chall11
+Succesfuly parsed, k = 55, w = 16
+Solution found : H*"00100001000000000000000010000001000000001000000010011000010010000000001000010010000000000000011000000000000000" = s
 
-real    0m16,611s
-user    0m16,589s
-sys     0m0,004s
+real    1m13,117s
+user    1m13,086s
+sys     0m0,001s
 ```
 
 ## Contributors

@@ -18,6 +18,7 @@ fn rev(a: Integer, n: usize) -> Integer {
     }
     ret
 }
+
 pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize, usize) {
     // Parse the file
     let mut lines = read_lines(&path).expect("Wrong file format.");
@@ -28,13 +29,14 @@ pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize, us
     }
 
     // Second line is always the value of n
-    let n = lines.next()
-    .and_then(|r| r.ok())
-    .and_then(|line| line.parse::<usize>().ok())
-    .unwrap_or_else(|| {
-        println!("Wrong file format.");
-        std::process::exit(1); // or return a default/error value
-    });
+    let n = lines
+        .next()
+        .and_then(|r| r.ok())
+        .and_then(|line| line.parse::<usize>().ok())
+        .unwrap_or_else(|| {
+            println!("Wrong file format.");
+            std::process::exit(1); // or return a default/error value
+        });
 
     // First line is always "# seed"
     if let Some(Ok(l)) = lines.next() {
@@ -42,13 +44,14 @@ pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize, us
     }
 
     // Fourth line is always the value of the (for now unused) seed
-    let _seed = lines.next()
-    .and_then(|r| r.ok())
-    .and_then(|line| line.parse::<usize>().ok())
-    .unwrap_or_else(|| {
-        println!("Wrong file format.");
-        std::process::exit(1); // or return a default/error value
-    });
+    let _seed = lines
+        .next()
+        .and_then(|r| r.ok())
+        .and_then(|line| line.parse::<usize>().ok())
+        .unwrap_or_else(|| {
+            println!("Wrong file format.");
+            std::process::exit(1); // or return a default/error value
+        });
 
     // Fith line is always "# w"
     if let Some(Ok(l)) = lines.next() {
@@ -56,17 +59,21 @@ pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize, us
     }
 
     // Sixth line is always the value of the weight
-    let w = lines.next()
-    .and_then(|r| r.ok())
-    .and_then(|line| line.parse::<usize>().ok())
-    .unwrap_or_else(|| {
-        println!("Wrong file format.");
-        std::process::exit(1); // or return a default/error value
-    });
+    let w = lines
+        .next()
+        .and_then(|r| r.ok())
+        .and_then(|line| line.parse::<usize>().ok())
+        .unwrap_or_else(|| {
+            println!("Wrong file format.");
+            std::process::exit(1); // or return a default/error value
+        });
 
     // Fith line is always "# w"
     if let Some(Ok(l)) = lines.next() {
-        assert_eq!(l, "# H^transpose (each line corresponds to column of H, the identity part is omitted)", "Wrong file format.")
+        assert_eq!(
+            l, "# H^transpose (each line corresponds to column of H, the identity part is omitted)",
+            "Wrong file format."
+        )
     }
 
     // for now we assume regime R=0.5
@@ -74,22 +81,18 @@ pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize, us
 
     // Following lines are the parity check matrix
     let H_T_right = (0..k)
-    .map(|_| {
-        match lines.next() {
+        .map(|_| match lines.next() {
             Some(Ok(line)) if line.len() == k => {
                 let a = Integer::parse_radix(line, 2);
                 match a {
-                    Err (_) => None,
-                    Ok (val) => Some(val.complete())
+                    Err(_) => None,
+                    Ok(val) => Some(val.complete()),
                 }
             }
             _ => None,
-        }
-    })
-    .collect::<Option<Vec<Integer>>>()
-    .expect(
-        "Wrong file format."
-    );
+        })
+        .collect::<Option<Vec<Integer>>>()
+        .expect("Wrong file format.");
 
     // Just before last line
     if let Some(Ok(l)) = lines.next() {
@@ -100,24 +103,26 @@ pub fn parse_challenge(path: String) -> (Vec<Integer>, Integer, usize, usize, us
         Some(Ok(line)) if line.len() == k => {
             let a = Integer::parse_radix(line, 2);
             match a {
-                Err (_) => None,
-                Ok (val) => Some(val.complete())
+                Err(_) => None,
+                Ok(val) => Some(val.complete()),
             }
         }
         _ => None,
-    }.expect(
-        "Wrong file format."
-    );
-    let H = (0..k).map( |idx| {
-        let mut ret = (Integer::ONE << (k - idx - 1)).complete();
-        for i in 0..k {
-            ret.set_bit((k+i) as u32,H_T_right[i].get_bit(idx as u32));
-        }
-        ret
-    } ).rev().collect::<Vec<Integer>>();
-    (H, rev(s, k) , w, k, n)
+    }
+    .expect("Wrong file format.");
+    let H = (0..k)
+        .map(|idx| {
+            let mut ret = (Integer::ONE << (k - idx - 1)).complete();
+            for i in 0..k {
+                ret.set_bit((k + i) as u32, H_T_right[i].get_bit(idx as u32));
+            }
+            ret
+        })
+        .rev()
+        .collect::<Vec<Integer>>();
+    (H, rev(s, k), w, k, n)
 }
 
-/* 
+/*
 000000100010001100000000000000
 */
